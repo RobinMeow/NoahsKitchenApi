@@ -49,8 +49,8 @@ When you run `dotnet run`, you can navigate to `http://localhost:5263/Swagger` t
 
 To deploy your API, follow these steps:
 
-- Copy the `appsettings.Template.json` file and rename it as `appsettings.Production.json` in your local development environment.
-- Replace the sample data in the `appsettings.Production.json` file with your own sensitive information.
+- Copy the `appsettings.Template.json` file and rename it as `appsettings.json` in your local development environment.
+- Replace the sample data in the `appsettings.json` file with your own sensitive information.
 
 Initially, I attempted to use `appsettings.json` as the default name and file for my production values. However, this approach caused unexpected issues. The `AllowedOrigins` values became mixed up, and ASP.NET Core included both a local and production URL in a single string array, while the second production URL was missing for unknown reasons. Therefore, I recommend adhering to Microsoft's "recommendation" as mentioned in the [official documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0).
 

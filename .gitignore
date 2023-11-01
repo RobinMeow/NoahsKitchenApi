@@ -479,3 +479,4 @@ $RECYCLE.BIN/
 # Production Sensitive Data
 docker-compose.yml
 appsettings.json
+appsettings.Production.json
