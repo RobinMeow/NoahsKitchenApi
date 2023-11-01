@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  api:
+    image: robinmeow/gkb-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - MY_ALLOWED_ORIGINS="https://gemeinschaftskochbuch.web.app,https://gemeinschaftskochbuch.firebaseapp.com"
+    container_name: gkb-api-container
