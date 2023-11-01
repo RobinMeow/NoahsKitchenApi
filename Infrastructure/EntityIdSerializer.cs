@@ -6,14 +6,14 @@ namespace api.Infrastructure;
 
 public sealed class EntityIdSerializer : IBsonSerializer
 {
-    readonly Type _valueType = typeof(EntityId); // Im scared of making it static.
+    static readonly Type _valueType = typeof(EntityId);
     public Type ValueType { get => _valueType; }
 
     // Deserialize from monogodb (to C#)
     public object Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        var reader = context.Reader;
-        return new EntityId(reader.ReadString());
+        string _id = context.Reader.ReadString();
+        return new EntityId(_id);
     }
 
     // Serialize to monogodb

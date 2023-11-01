@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using api.Domain;
@@ -19,11 +20,11 @@ public static class DtoMappingExtensions
 
     public static IEnumerable<RecipeDto> ToDto(this IEnumerable<Recipe> recipes)
     {
-        ICollection<RecipeDto> list = new List<RecipeDto>();
+        ConcurrentQueue<RecipeDto> list = new ConcurrentQueue<RecipeDto>();
 
         Parallel.ForEach(recipes, (recipe) =>
         {
-            list.Add(recipe.ToDto());
+            list.Enqueue(recipe.ToDto());
         });
 
         return list;

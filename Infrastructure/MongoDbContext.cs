@@ -33,14 +33,14 @@ public sealed class MongoDbContext : DbContext
 
             BsonClassMap.RegisterClassMap<Chef>(x =>
             {
-                x.SetDiscriminator(nameof(Entity));
                 x.AutoMap();
+                x.SetDiscriminator(nameof(Entity));
             });
 
             BsonClassMap.RegisterClassMap<Recipe>(x =>
             {
-                x.SetDiscriminator(nameof(Entity));
                 x.AutoMap();
+                x.SetDiscriminator(nameof(Entity));
             });
         }
 
