@@ -43,7 +43,7 @@ This "Library" (or folder in this case :D) is literally just a shared module.
 
 ## Development
 
-When you run `dotnet run`, you can navigate to `http://localhost:5263/Swagger` to test the API without UI.
+When you run `dotnet run`, you can navigate to `http://localhost:5126/Swagger` to test the API without UI.
 
 ## Deployment
 
