@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  api:
+    image: your-docker-hub-name/your-docker-repository:your-tag
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - MY_ALLOWED_ORIGINS="https://example.com,https://another-example.com"
+    container_name: gkb-api-container
