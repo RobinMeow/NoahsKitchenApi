@@ -1,29 +1,25 @@
 using api.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class AuthController : GkbController
+public sealed class AuthController(
+    DbContext _context,
+    ILogger<RecipeController> _logger,
+    IPasswordHasher _passwordHasher,
+    IJwtFactory _jwtFactory
+    ) : GkbController
 {
-    readonly IChefRepository _chefRepository;
-    readonly ILogger<RecipeController> _logger;
-    readonly IPasswordHasher _passwordHasher;
+    readonly IChefRepository _chefRepository = _context.ChefRepository;
+    readonly ILogger<RecipeController> _logger = _logger;
+    readonly IPasswordHasher _passwordHasher = _passwordHasher;
+    readonly IJwtFactory _jwtFactory = _jwtFactory;
 
-    public AuthController(
-        DbContext dbContext,
-        ILogger<RecipeController> logger,
-        IPasswordHasher passwordHasher
-    )
-    {
-        _chefRepository = dbContext.ChefRepository;
-        _logger = logger;
-        _passwordHasher = passwordHasher;
-    }
-
-    [HttpPost(nameof(SignUp))]
-    public async Task<IActionResult> SignUp(NewChef newChef)
+    [HttpPost(nameof(Register))]
+    public async Task<IActionResult> Register(NewChef newChef)
     {
         string chefname = newChef.Name;
         try
@@ -60,8 +56,30 @@ public sealed class AuthController : GkbController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(SignUp)), chefname);
+            _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(Register)), chefname);
             return Status_500_Internal_Server_Error;
         }
+    }
+
+    [HttpPost(nameof(Login))]
+    public async Task<ActionResult<string>> Login(string name, string password)
+    {
+        Chef chef = await _chefRepository.GetAsync(name);
+
+        if (chef == null || chef.Name != name)
+        {
+            return BadRequest("User not found");
+        }
+
+        PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, password);
+
+        if (passwordVerificationResult == PasswordVerificationResult.Failed)
+        {
+            return BadRequest("Invalid password.");
+        }
+
+        string token = _jwtFactory.Create(chef);
+
+        return Ok(token);
     }
 }

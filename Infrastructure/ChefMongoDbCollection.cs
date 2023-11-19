@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using api.Domain;
 using MongoDB.Driver;
 
@@ -30,5 +28,12 @@ public sealed class ChefMongoDbCollection : IChefRepository
         return await _collection
             .Find<Chef>(_ => true)
             .ToListAsync();
+    }
+
+    public async Task<Chef> GetAsync(string name)
+    {
+        return await _collection
+            .Find<Chef>(chef => chef.Name == name)
+            .SingleOrDefaultAsync();
     }
 }
