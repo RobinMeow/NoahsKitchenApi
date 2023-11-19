@@ -17,10 +17,16 @@ public sealed class ChefMongoDbCollection : IChefRepository
         return _collection.InsertOneAsync(chef);
     }
 
-    public async Task<bool> NameIsAlreadyTakenAsync(string chefname)
+    public async Task<Chef?> GetByNameAsync(string name)
     {
-        long chefCount = await _collection.CountDocumentsAsync((Chef chef) => chef.Name == chefname);
-        return chefCount > 0;
+        IAsyncCursor<Chef> asyncCursor = await _collection.FindAsync((Chef chef) => chef.Name == name);
+        return await asyncCursor.FirstOrDefaultAsync();
+    }
+
+    public async Task<Chef?> GetByEmailAsync(string email)
+    {
+        IAsyncCursor<Chef> asyncCursor = await _collection.FindAsync((Chef chef) => chef.Email == email);
+        return await asyncCursor.FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<Chef>> GetAllAsync()

@@ -9,6 +9,8 @@ public sealed class Chef : Entity
 
     public string Name { get; set; } = null!;
 
+    public string? Email { get; set; } = null!;
+
     public string PasswordHash { get; set; } = null!;
 
     public Chef(string name, EntityId chefId)
