@@ -22,31 +22,43 @@ public sealed class AuthController(
     public async Task<IActionResult> Register(NewChef newChef)
     {
         string chefname = newChef.Name;
+
+        if (string.IsNullOrWhiteSpace(chefname))
+            return BadRequest(new { notifications = new string[] { $"Chefname darf nicht leer sein." } });
+
+        if (chefname.Length < 3)
+            return BadRequest(new { notifications = new string[] { $"Chefname muss mind. 3 Zeichen enthalten." } });
+
+        if (chefname.Length > 20)
+            return BadRequest(new { notifications = new string[] { $"Chefname darf nicht mehr als 20 Zeichen enthalten." } });
+
         try
         {
-            if (string.IsNullOrWhiteSpace(chefname))
-                return BadRequest(new { notifications = new string[] { $"Chefname darf nicht leer sein." } });
-
-            if (chefname.Length < 3)
-                return BadRequest(new { notifications = new string[] { $"Chefname muss mind. 3 Zeichen enthalten." } });
-
-            if (chefname.Length > 20)
-                return BadRequest(new { notifications = new string[] { $"Chefname darf nicht mehr als 20 Zeichen enthalten." } });
-
             // validate username, and check for existing ones.
             // read email and userid from claim
             // write into database
             IEnumerable<Chef> chefs = await _chefRepository.GetAllAsync();
 
-            bool nameIsInUse = await _chefRepository.NameIsAlreadyTakenAsync(chefname);
+            Chef? chefWithSameName = await _chefRepository.GetByNameAsync(chefname);
 
-            if (nameIsInUse)
+            if (chefWithSameName != null)
                 return BadRequest(new { notifications = new string[] { $"Chefname ist bereits vergeben." } });
+
+            if (newChef.Email != null)
+            {
+                Chef? chefWithSameEmail = await _chefRepository.GetByEmailAsync(newChef.Email);
+
+                if (chefWithSameEmail != null)
+                    return BadRequest(new { notifications = new string[] { $"Email ist bereits vergeben." } });
+            }
 
             Chef chef = new Chef(
                 chefname,
                 EntityId.New()
-            );
+            )
+            {
+                Email = newChef.Email
+            };
 
             chef.SetPassword(newChef.Password, _passwordHasher);
 
@@ -64,11 +76,11 @@ public sealed class AuthController(
     [HttpPost(nameof(Login))]
     public async Task<ActionResult<string>> Login(string name, string password)
     {
-        Chef chef = await _chefRepository.GetAsync(name);
+        Chef? chef = await _chefRepository.GetByNameAsync(name);
 
-        if (chef == null || chef.Name != name)
+        if (chef == null)
         {
-            return BadRequest("User not found");
+            return BadRequest("User not found.");
         }
 
         PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, password);
