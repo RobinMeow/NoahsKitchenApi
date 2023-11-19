@@ -6,25 +6,17 @@ namespace api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class AuthController : GkbController
+public sealed class AuthController(
+    DbContext _context,
+    ILogger<RecipeController> _logger,
+    IPasswordHasher _passwordHasher,
+    IJwtFactory _jwtFactory
+    ) : GkbController
 {
-    readonly IChefRepository _chefRepository;
-    readonly ILogger<RecipeController> _logger;
-    readonly IPasswordHasher _passwordHasher;
-    readonly IJwtFactory _jwtFactory;
-
-    public AuthController(
-        DbContext dbContext,
-        ILogger<RecipeController> logger,
-        IPasswordHasher passwordHasher,
-        IJwtFactory jwtFactory
-    )
-    {
-        _chefRepository = dbContext.ChefRepository;
-        _logger = logger;
-        _passwordHasher = passwordHasher;
-        _jwtFactory = jwtFactory;
-    }
+    readonly IChefRepository _chefRepository = _context.ChefRepository;
+    readonly ILogger<RecipeController> _logger = _logger;
+    readonly IPasswordHasher _passwordHasher = _passwordHasher;
+    readonly IJwtFactory _jwtFactory = _jwtFactory;
 
     [HttpPost(nameof(Register))]
     public async Task<IActionResult> Register(NewChef newChef)
