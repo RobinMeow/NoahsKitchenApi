@@ -42,9 +42,9 @@ public sealed class AuthController : GkbController
             // write into database
             IEnumerable<Chef> chefs = await _chefRepository.GetAllAsync();
 
-            bool emailIsInUse = await _chefRepository.NameIsAlreadyTakenAsync(chefname);
+            bool nameIsInUse = await _chefRepository.NameIsAlreadyTakenAsync(chefname);
 
-            if (emailIsInUse)
+            if (nameIsInUse)
                 return BadRequest(new { notifications = new string[] { $"Chefname ist bereits vergeben." } });
 
             Chef chef = new Chef(
