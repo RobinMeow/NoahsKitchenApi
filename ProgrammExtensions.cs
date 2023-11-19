@@ -59,6 +59,7 @@ public static class ProgrammExtensions
     {
         services.AddSwaggerGen(c =>
         {
+            c.SupportNonNullableReferenceTypes();
             // Avoid having to type out the "Bearer " https://stackoverflow.com/a/64899768
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Noahs Kitchen", Version = "v1" });
 
