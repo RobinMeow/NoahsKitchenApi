@@ -1,10 +1,11 @@
 using api.Domain;
+using api.Domain.Auth;
 using api.Infrastructure;
-using Microsoft.AspNetCore.Builder;
+using api.Infrastructure.Auth;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace api;
 
@@ -20,14 +21,42 @@ internal class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            // Avoid having to type out the "Bearer " https://stackoverflow.com/a/64899768
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Noahs Kitchen", Version = "v1" });
+
+            c.OperationFilter<SecurityRequirementsOperationFilter>();
+            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey
+            });
+        });
+
+        builder.Services.AddAuthentication().AddJwtBearer((options) =>
+        {
+            BearerConfig bearerConfig = builder.Configuration.GetSection(nameof(BearerConfig)).Get<BearerConfig>()!;
+
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                IssuerSigningKey = new IssuerSigningKeyFactory(builder.Configuration).Create(),
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = bearerConfig.Issuer,
+                ValidateIssuer = true,
+                ValidAudiences = bearerConfig.Audiences,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+            };
+        });
 
         builder.AddFrontEndOriginsCors();
 
-        // Singleton: instance per 'deploy' (per application lifetime)
-        // Scoped: instance per HTTP request
-        // Transient: instance per code request.
-        builder.Services.AddScoped<DbContext, MongoDbContext>(); // Apperently its best practise to have it a singleton. I dont see a reason to leave a db connection open for ever. So I stick to scoped. Retrieving a connection from to pool and returning it once per http request seems more reasonable. (I will probably end up changing this later, as soon as I realize, that EFCore uses scoped pool connections internally)
+        builder.Services.AddSingleton<DbContext, MongoDbContext>(); // Transient: instance per code request. Scoped: instance per HTTP request
+        builder.Services.AddSingleton<IIssuerSigningKeyFactory, IssuerSigningKeyFactory>();
+        builder.Services.AddSingleton<IPasswordHasher, AspPasswordHasher>();
 
         WebApplication app = builder.Build();
 
@@ -39,6 +68,7 @@ internal class Program
         }
 
         app.UseCors();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 

@@ -31,4 +31,11 @@ public sealed class ChefMongoDbCollection : IChefRepository
             .Find<Chef>(_ => true)
             .ToListAsync();
     }
+
+    public async Task<Chef> GetAsync(string name)
+    {
+        return await _collection
+            .Find<Chef>(chef => chef.Name == name)
+            .SingleOrDefaultAsync();
+    }
 }
