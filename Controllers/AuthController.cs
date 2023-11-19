@@ -1,10 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using api.Domain;
 using api.Domain.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace api.Controllers;
 
@@ -17,13 +14,15 @@ public sealed class AuthController : GkbController
     readonly IPasswordHasher _passwordHasher;
     readonly BearerConfig _bearerConfig;
     readonly IIssuerSigningKeyFactory _issuerSigningKeyFactory;
+    readonly IJwtFactory _jwtFactory;
 
     public AuthController(
         DbContext dbContext,
         ILogger<RecipeController> logger,
         IPasswordHasher passwordHasher,
         IConfiguration configuration,
-        IIssuerSigningKeyFactory issuerSigningKeyFactory
+        IIssuerSigningKeyFactory issuerSigningKeyFactory,
+        IJwtFactory jwtFactory
     )
     {
         _chefRepository = dbContext.ChefRepository;
@@ -31,6 +30,7 @@ public sealed class AuthController : GkbController
         _passwordHasher = passwordHasher;
         _bearerConfig = configuration.GetSection(nameof(BearerConfig)).Get<BearerConfig>()!;
         _issuerSigningKeyFactory = issuerSigningKeyFactory;
+        _jwtFactory = jwtFactory;
     }
 
     [HttpPost(nameof(Register))]
@@ -93,31 +93,8 @@ public sealed class AuthController : GkbController
             return BadRequest("Invalid password.");
         }
 
-        string token = CreateToken(chef);
+        string token = _jwtFactory.Create(chef);
 
         return Ok(token);
-    }
-
-    private string CreateToken(Chef chef)
-    {
-        // ToDo: ITokenGenerator
-        List<Claim> claims = new List<Claim>() {
-            new Claim(ClaimTypes.Name, chef.Name),
-        };
-
-        SecurityKey securityKey = _issuerSigningKeyFactory.Create();
-
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddDays(7),
-            signingCredentials: signingCredentials,
-            issuer: _bearerConfig.Issuer,
-            audience: String.Join(",", _bearerConfig.Audiences) // https://www.ibm.com/docs/en/datapower-gateway/2018.4?topic=commands-aud-claim "a comma-separated string of values"
-            );
-
-        string jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwt;
     }
 }
