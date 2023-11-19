@@ -1,44 +1,31 @@
+using System.ComponentModel.DataAnnotations;
 using api.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers;
+namespace api.Controllers.Auth;
 
 [ApiController]
 [Route("[controller]")]
 public sealed class AuthController(
     DbContext _context,
-    ILogger<RecipeController> _logger,
+    ILogger<AuthController> _logger,
     IPasswordHasher _passwordHasher,
     IJwtFactory _jwtFactory
     ) : GkbController
 {
     readonly IChefRepository _chefRepository = _context.ChefRepository;
-    readonly ILogger<RecipeController> _logger = _logger;
+    readonly ILogger<AuthController> _logger = _logger;
     readonly IPasswordHasher _passwordHasher = _passwordHasher;
     readonly IJwtFactory _jwtFactory = _jwtFactory;
 
     [HttpPost(nameof(Register))]
-    public async Task<IActionResult> Register(NewChef newChef)
+    public async Task<IActionResult> Register([Required] NewChef newChef)
     {
         string chefname = newChef.Name;
 
-        if (string.IsNullOrWhiteSpace(chefname))
-            return BadRequest(new { notifications = new string[] { $"Chefname darf nicht leer sein." } });
-
-        if (chefname.Length < 3)
-            return BadRequest(new { notifications = new string[] { $"Chefname muss mind. 3 Zeichen enthalten." } });
-
-        if (chefname.Length > 20)
-            return BadRequest(new { notifications = new string[] { $"Chefname darf nicht mehr als 20 Zeichen enthalten." } });
-
         try
         {
-            // validate username, and check for existing ones.
-            // read email and userid from claim
-            // write into database
-            IEnumerable<Chef> chefs = await _chefRepository.GetAllAsync();
-
             Chef? chefWithSameName = await _chefRepository.GetByNameAsync(chefname);
 
             if (chefWithSameName != null)
@@ -62,7 +49,7 @@ public sealed class AuthController(
 
             chef.SetPassword(newChef.Password, _passwordHasher);
 
-            await _chefRepository.AddAsync(chef);
+            await _chefRepository.AddAsync(chef).ConfigureAwait(false);
 
             return Ok();
         }
@@ -74,7 +61,7 @@ public sealed class AuthController(
     }
 
     [HttpPost(nameof(Login))]
-    public async Task<ActionResult<string>> Login(string name, string password)
+    public async Task<ActionResult<string>> Login([Required] string name, [Required] string password)
     {
         Chef? chef = await _chefRepository.GetByNameAsync(name);
 
