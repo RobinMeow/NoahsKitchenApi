@@ -1,5 +1,4 @@
 using api.Domain;
-using api.Domain.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,24 +11,18 @@ public sealed class AuthController : GkbController
     readonly IChefRepository _chefRepository;
     readonly ILogger<RecipeController> _logger;
     readonly IPasswordHasher _passwordHasher;
-    readonly BearerConfig _bearerConfig;
-    readonly IIssuerSigningKeyFactory _issuerSigningKeyFactory;
     readonly IJwtFactory _jwtFactory;
 
     public AuthController(
         DbContext dbContext,
         ILogger<RecipeController> logger,
         IPasswordHasher passwordHasher,
-        IConfiguration configuration,
-        IIssuerSigningKeyFactory issuerSigningKeyFactory,
         IJwtFactory jwtFactory
     )
     {
         _chefRepository = dbContext.ChefRepository;
         _logger = logger;
         _passwordHasher = passwordHasher;
-        _bearerConfig = configuration.GetSection(nameof(BearerConfig)).Get<BearerConfig>()!;
-        _issuerSigningKeyFactory = issuerSigningKeyFactory;
         _jwtFactory = jwtFactory;
     }
 
