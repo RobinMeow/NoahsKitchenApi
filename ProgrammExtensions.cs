@@ -1,4 +1,6 @@
+using api.Domain;
 using api.Domain.Auth;
+using api.Infrastructure;
 using api.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -28,6 +30,10 @@ public static class ProgrammExtensions
 
     public static IServiceCollection AddJwtAuthetication(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<IIssuerSigningKeyFactory, IssuerSigningKeyFactory>();
+        services.AddSingleton<IPasswordHasher, AspPasswordHasher>();
+        services.AddSingleton<IJwtFactory, JwtFactory>();
+
         AuthenticationBuilder authenticationBuilder = services.AddAuthentication();
 
         authenticationBuilder.AddJwtBearer((options) =>

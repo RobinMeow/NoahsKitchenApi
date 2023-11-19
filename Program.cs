@@ -1,7 +1,5 @@
 using api.Domain;
-using api.Domain.Auth;
 using api.Infrastructure;
-using api.Infrastructure.Auth;
 
 namespace api;
 
@@ -23,9 +21,6 @@ internal class Program
         builder.AddFrontEndOriginsCors();
 
         builder.Services.AddSingleton<DbContext, MongoDbContext>(); // Transient: instance per code request. Scoped: instance per HTTP request
-        builder.Services.AddSingleton<IIssuerSigningKeyFactory, IssuerSigningKeyFactory>();
-        builder.Services.AddSingleton<IPasswordHasher, AspPasswordHasher>();
-        builder.Services.AddSingleton<IJwtFactory, JwtFactory>();
 
         WebApplication app = builder.Build();
 
