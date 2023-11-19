@@ -56,7 +56,11 @@ Initially, I attempted to use `appsettings.json` as the default name and file fo
 
 > Take note of how they use capitalization for the words `Staging` and `Development`.
 
-I may consider renaming my other template files to follow this convention so that the entire project aligns with Microsoft's standards. (Can you sense Microsoft's influence and their desire to impose their conventions on you, the way I do? :ape:)
+### BearerConfig
+
+- `Audiences`is a array of urls for your UIs. For example, by hosting with firebase, you get two domain urls, which both point to the same website. Specify both in here, to allow them as BearerToken usesrs.
+- `Issuer` is the "party" who generates the token. Which is this server here. So put in your hosting url.
+- `SigningKey` used to create and read bearer tokens.
 
 ### Docker
 
