@@ -1,0 +1,11 @@
+# To make your build context as small as possible, add a .dockerignore file to your dotnet-docker folder and copy the following into it.
+**/bin/
+**/obj/
+.gitignore
+appsettings.Template.json
+docker-compose.template.yml
+docker-compose.yml
+Dockerfile
+README.md
+.firebase**
+.vscode**

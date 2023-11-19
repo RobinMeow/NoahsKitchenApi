@@ -475,3 +475,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Production Sensitive Data
+docker-compose.yml
+appsettings.json
+appsettings.Production.json
