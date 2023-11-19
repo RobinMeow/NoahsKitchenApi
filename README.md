@@ -1,4 +1,4 @@
-# Gemeinschaftskochbuch API
+# NoahsKitchen API
 
 ## (Layered) Architecture
 
