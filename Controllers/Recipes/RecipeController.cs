@@ -1,28 +1,23 @@
+using System.ComponentModel.DataAnnotations;
 using api.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers;
+namespace api.Controllers.Recipes;
 
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public sealed class RecipeController : GkbController
+public sealed class RecipeController(
+    ILogger<RecipeController> logger,
+    DbContext _context
+    ) : GkbController
 {
-    readonly ILogger<RecipeController> _logger;
-    readonly IRecipeRepository _recipeRepository;
-
-    public RecipeController(
-        ILogger<RecipeController> logger,
-        DbContext dbContext
-        )
-    {
-        _logger = logger;
-        _recipeRepository = dbContext.RecipeRepository;
-    }
+    readonly ILogger<RecipeController> _logger = logger;
+    readonly IRecipeRepository _recipeRepository = _context.RecipeRepository;
 
     [HttpPost(nameof(Add))]
-    public IActionResult Add([FromBody] NewRecipeDto newRecipe)
+    public IActionResult Add([Required] NewRecipeDto newRecipe)
     {
         try
         {

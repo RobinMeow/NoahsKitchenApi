@@ -1,4 +1,4 @@
-namespace api.Controllers;
+namespace api.Controllers.Recipes;
 
 public sealed class NewRecipeDto : Notification
 {
