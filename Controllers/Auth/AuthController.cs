@@ -20,7 +20,9 @@ public sealed class AuthController(
     readonly IJwtFactory _jwtFactory = _jwtFactory;
 
     [HttpPost(nameof(Register))]
-    public async Task<IActionResult> Register([Required] NewChef newChef)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Register([Required] RegisterChefDto newChef)
     {
         string chefname = newChef.Name;
 
@@ -51,7 +53,7 @@ public sealed class AuthController(
 
             await _chefRepository.AddAsync(chef).ConfigureAwait(false);
 
-            return Ok();
+            return Created();
         }
         catch (Exception ex)
         {
@@ -61,16 +63,18 @@ public sealed class AuthController(
     }
 
     [HttpPost(nameof(Login))]
-    public async Task<ActionResult<string>> Login([Required] string name, [Required] string password)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<string>> Login([Required] LoginDto login)
     {
-        Chef? chef = await _chefRepository.GetByNameAsync(name);
+        Chef? chef = await _chefRepository.GetByNameAsync(login.Name);
 
         if (chef == null)
         {
             return BadRequest("User not found.");
         }
 
-        PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, password);
+        PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, login.Password);
 
         if (passwordVerificationResult == PasswordVerificationResult.Failed)
         {
