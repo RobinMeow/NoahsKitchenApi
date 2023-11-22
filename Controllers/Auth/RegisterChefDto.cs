@@ -12,6 +12,5 @@ public record class RegisterChefDto
     [StringRange(4, 50)]
     public string Password { get; set; } = null!;
 
-    [StringRange(5, 254)]
     public string? Email { get; set; }
 }
