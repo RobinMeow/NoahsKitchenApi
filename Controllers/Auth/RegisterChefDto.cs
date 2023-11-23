@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace api.Controllers.Auth;
 
@@ -12,5 +13,6 @@ public record class RegisterChefDto
     [StringRange(4, 50)]
     public string Password { get; set; } = null!;
 
+    [EmailAddress]
     public string? Email { get; set; }
 }

@@ -1,12 +1,15 @@
+using System.Reflection;
 using api.Domain;
 using api.Domain.Auth;
 using api.Infrastructure;
 using api.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace api;
 
@@ -60,10 +63,36 @@ public static class ProgrammExtensions
         services.AddSwaggerGen(c =>
         {
             c.SupportNonNullableReferenceTypes();
+
+            c.CustomOperationIds((ApiDescription apiDescription) =>
+            {
+                return apiDescription.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
+            });
+
             // Avoid having to type out the "Bearer " https://stackoverflow.com/a/64899768
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Noahs Kitchen", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Noahs Kitchen",
+                Version = "v1",
+                Contact = new OpenApiContact()
+                {
+                    Email = "robinmeow97@gmail.com",
+                    Name = "Robin Daubenschütz",
+                    Url = new Uri("https://robindaub.dev"),
+                },
+                License = new OpenApiLicense()
+                {
+                    Name = "MIT License",
+                    // Url = 
+                }
+            });
+
+            string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            string xmlDocumentationPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+            c.IncludeXmlComments(xmlDocumentationPath);
 
             c.OperationFilter<SecurityRequirementsOperationFilter>();
+
             c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",

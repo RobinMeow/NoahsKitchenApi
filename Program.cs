@@ -28,7 +28,10 @@ internal class Program
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI((o) =>
+            {
+                o.DisplayOperationId();
+            });
         }
 
         app.UseCors();
