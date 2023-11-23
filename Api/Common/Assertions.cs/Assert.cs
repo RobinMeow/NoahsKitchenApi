@@ -2,7 +2,7 @@ using System;
 
 namespace api.Assertions;
 
-/// <summary>Throw an <see cref="InvalidOperationException"> when the assertion (statement) is not fullfilled and adds the passed in message to it.</summary>
+/// <summary>Throw an <see cref="InvalidOperationException" /> when the assertion (statement) is not fullfilled and adds the passed in message to it.</summary>
 public static class Assert
 {
     public static void True(bool boolValue, string message)
