@@ -2,7 +2,9 @@ using api.Domain;
 
 namespace api.Controllers.Recipes;
 
-/// <summary>Uses the <see cref="RecipeValidators"> to ensure the data is valid. Adds ErrorMessages to the DTO accordingly. Returns true when it contains invalid data.</summary>
+/// <summary>
+/// Uses the <see cref="RecipeValidators" /> to ensure the data is valid. Adds ErrorMessages to the DTO accordingly. Returns true when it contains invalid data.
+/// </summary>
 public sealed class NewRecipeSpecification
 {
     readonly NewRecipeDto _newRecipe;

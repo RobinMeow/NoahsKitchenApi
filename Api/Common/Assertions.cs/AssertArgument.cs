@@ -2,7 +2,9 @@ using System;
 
 namespace api.Assertions;
 
-/// <summary>Validates the argument, and throws an exception when the assertion (statement) is not fullfilled. Unlike <see cref="Assert"> this calss builds error message based on the argument name.</summary>
+/// <summary>
+/// Validates the argument, and throws an exception when the assertion (statement) is not fullfilled. Unlike <see cref="Assert" /> this calss builds error message based on the argument name.
+/// </summary>
 public static class AssertArgument
 {
     public static void ArgumentNotNull(object objectValue, string argumentName)

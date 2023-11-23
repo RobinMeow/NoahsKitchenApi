@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 using api.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers.Auth;
 
 [ApiController]
+[Produces(MediaTypeNames.Application.Json)]
+[Consumes(MediaTypeNames.Application.Json)]
 [Route("[controller]")]
 public sealed class AuthController(
     DbContext _context,
@@ -19,6 +22,11 @@ public sealed class AuthController(
     readonly IPasswordHasher _passwordHasher = _passwordHasher;
     readonly IJwtFactory _jwtFactory = _jwtFactory;
 
+    /// <summary>
+    /// sign up a new user
+    /// </summary>
+    /// <param name="newChef">the user to sign up</param>
+    /// <returns>201 Created</returns>
     [HttpPost(nameof(Register))]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
