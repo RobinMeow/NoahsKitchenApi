@@ -34,9 +34,9 @@ public sealed class ControllerTests
 
         var expectedCreatedResult = new CreatedResult();
 
-        CreatedResult? meow = await _authController.RegisterAsync(requestDto) as CreatedResult;
+        CreatedResult? createdResult = await _authController.RegisterAsync(requestDto) as CreatedResult;
 
-        Equal(expectedCreatedResult.StatusCode, meow?.StatusCode);
+        Equal(expectedCreatedResult.StatusCode, createdResult?.StatusCode);
     }
 
     [Fact]
