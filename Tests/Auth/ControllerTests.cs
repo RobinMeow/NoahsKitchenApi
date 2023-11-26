@@ -1,6 +1,5 @@
 using api.Controllers.Auth;
 using api.Domain;
-using api.Infrastructure.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -34,14 +33,14 @@ public sealed class ControllerTests
 
         var expectedCreatedResult = new CreatedResult();
 
-        CreatedResult? meow = await _authController.Register(requestDto) as CreatedResult;
+        CreatedResult? createdResult = await _authController.RegisterAsync(requestDto) as CreatedResult;
 
-        Equal(expectedCreatedResult.StatusCode, meow?.StatusCode);
+        Equal(expectedCreatedResult.StatusCode, createdResult?.StatusCode);
     }
 
     [Fact]
     public async Task Register_With_NUll_Throws()
     {
-        await ThrowsAnyAsync<NullReferenceException>(async () => await _authController.Register(null!));
+        await ThrowsAnyAsync<NullReferenceException>(async () => await _authController.RegisterAsync(null!));
     }
 }
