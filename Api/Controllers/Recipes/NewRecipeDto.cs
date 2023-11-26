@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace api.Controllers.Recipes;
 
 public sealed class NewRecipeDto : Notification
 {
-    public string? Name { get; set; }
+    [Required]
+    public string Name { get; set; } = null!;
 }

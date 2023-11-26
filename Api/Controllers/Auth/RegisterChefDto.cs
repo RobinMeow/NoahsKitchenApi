@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace api.Controllers.Auth;
 
-public record class RegisterChefDto
+public sealed record class RegisterChefDto
 {
     [Required]
     [StringRange(3, 20)]
