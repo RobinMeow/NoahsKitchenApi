@@ -42,4 +42,9 @@ public sealed class ChefMongoDbCollection : IChefRepository
             .Find<Chef>(chef => chef.Name == name)
             .SingleOrDefaultAsync();
     }
+
+    public Task RemoveAsync(string chefname)
+    {
+        return _collection.DeleteOneAsync(chef => chef.Name == chefname);
+    }
 }

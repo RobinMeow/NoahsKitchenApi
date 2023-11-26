@@ -39,7 +39,7 @@ public sealed class ControllerTests
     }
 
     [Fact]
-    public async Task Register_With_NUll_Throws()
+    public async Task Register_With_Null_Throws()
     {
         await ThrowsAnyAsync<NullReferenceException>(async () => await _authController.RegisterAsync(null!));
     }

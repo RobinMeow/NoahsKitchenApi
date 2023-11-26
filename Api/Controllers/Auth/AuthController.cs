@@ -101,4 +101,36 @@ public sealed class AuthController(
             return Status_500_Internal_Server_Error;
         }
     }
+
+    [HttpPost(nameof(DeleteAsync))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<string>> DeleteAsync(DeleteChefDto deleteChef)
+    {
+        try
+        {
+            Chef? chef = await _chefRepository.GetByNameAsync(deleteChef.Name);
+
+            if (chef == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, deleteChef.Password);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
+            {
+                return BadRequest("Invalid password.");
+            }
+
+            await _chefRepository.RemoveAsync(deleteChef.Name);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(DeleteAsync)), deleteChef);
+            return Status_500_Internal_Server_Error;
+        }
+    }
 }

@@ -6,4 +6,5 @@ public interface IChefRepository
     Task<Chef?> GetByNameAsync(string chefname);
     Task<Chef?> GetByEmailAsync(string email);
     Task<IEnumerable<Chef>> GetAllAsync();
+    Task RemoveAsync(string chefname);
 }
