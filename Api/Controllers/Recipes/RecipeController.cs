@@ -16,8 +16,8 @@ public sealed class RecipeController(
     readonly ILogger<RecipeController> _logger = logger;
     readonly IRecipeRepository _recipeRepository = _context.RecipeRepository;
 
-    [HttpPost(nameof(Add))]
-    public IActionResult Add([Required] NewRecipeDto newRecipe)
+    [HttpPost(nameof(AddAsync))]
+    public IActionResult AddAsync([Required] NewRecipeDto newRecipe)
     {
         try
         {
@@ -32,7 +32,7 @@ public sealed class RecipeController(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, CreateErrorMessage(nameof(RecipeController), nameof(Add)), newRecipe);
+            _logger.LogError(ex, CreateErrorMessage(nameof(RecipeController), nameof(AddAsync)), newRecipe);
             return Status_500_Internal_Server_Error;
         }
     }
@@ -47,8 +47,8 @@ public sealed class RecipeController(
         };
     }
 
-    [HttpGet(nameof(GetAll))]
-    public async ValueTask<IActionResult> GetAll()
+    [HttpGet(nameof(GetAllAsync))]
+    public async ValueTask<IActionResult> GetAllAsync()
     {
         try
         {
@@ -57,7 +57,7 @@ public sealed class RecipeController(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, CreateErrorMessage(nameof(RecipeController), nameof(GetAll)));
+            _logger.LogError(ex, CreateErrorMessage(nameof(RecipeController), nameof(GetAllAsync)));
             return Status_500_Internal_Server_Error;
         }
     }

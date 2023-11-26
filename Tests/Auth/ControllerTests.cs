@@ -34,7 +34,7 @@ public sealed class ControllerTests
 
         var expectedCreatedResult = new CreatedResult();
 
-        CreatedResult? meow = await _authController.Register(requestDto) as CreatedResult;
+        CreatedResult? meow = await _authController.RegisterAsync(requestDto) as CreatedResult;
 
         Equal(expectedCreatedResult.StatusCode, meow?.StatusCode);
     }
@@ -42,6 +42,6 @@ public sealed class ControllerTests
     [Fact]
     public async Task Register_With_NUll_Throws()
     {
-        await ThrowsAnyAsync<NullReferenceException>(async () => await _authController.Register(null!));
+        await ThrowsAnyAsync<NullReferenceException>(async () => await _authController.RegisterAsync(null!));
     }
 }
