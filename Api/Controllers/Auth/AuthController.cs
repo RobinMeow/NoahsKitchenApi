@@ -105,7 +105,7 @@ public sealed class AuthController(
     [HttpPost(nameof(DeleteAsync))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> DeleteAsync(DeleteChefDto deleteChef)
+    public async Task<IActionResult> DeleteAsync([Required] DeleteChefDto deleteChef)
     {
         try
         {
