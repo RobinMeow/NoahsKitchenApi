@@ -65,7 +65,7 @@ public sealed class AuthController(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(RegisterAsync)), chefname);
+            _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(RegisterAsync)), newChef);
             return Status_500_Internal_Server_Error;
         }
     }
@@ -75,22 +75,30 @@ public sealed class AuthController(
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     public async Task<ActionResult<string>> LoginAsync([Required] LoginDto login)
     {
-        Chef? chef = await _chefRepository.GetByNameAsync(login.Name);
-
-        if (chef == null)
+        try
         {
-            return BadRequest("User not found.");
+            Chef? chef = await _chefRepository.GetByNameAsync(login.Name);
+
+            if (chef == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, login.Password);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
+            {
+                return BadRequest("Invalid password.");
+            }
+
+            string token = _jwtFactory.Create(chef);
+
+            return Ok(token);
         }
-
-        PasswordVerificationResult passwordVerificationResult = _passwordHasher.VerifyHashedPassword(chef, chef.PasswordHash, login.Password);
-
-        if (passwordVerificationResult == PasswordVerificationResult.Failed)
+        catch (Exception ex)
         {
-            return BadRequest("Invalid password.");
+            _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(LoginAsync)), login);
+            return Status_500_Internal_Server_Error;
         }
-
-        string token = _jwtFactory.Create(chef);
-
-        return Ok(token);
     }
 }
