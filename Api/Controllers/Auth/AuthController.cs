@@ -30,7 +30,8 @@ public sealed class AuthController(
     [HttpPost(nameof(RegisterAsync))]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RegisterAsync([Required] RegisterChefDto newChef)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IResult> RegisterAsync([Required] RegisterChefDto newChef)
     {
         string chefname = newChef.Name;
 
@@ -39,14 +40,14 @@ public sealed class AuthController(
             Chef? chefWithSameName = await _chefRepository.GetByNameAsync(chefname);
 
             if (chefWithSameName != null)
-                return BadRequest(new { notifications = new string[] { $"Chefname ist bereits vergeben." } });
+                return Results.BadRequest($"Chefname ist bereits vergeben.");
 
             if (newChef.Email != null)
             {
                 Chef? chefWithSameEmail = await _chefRepository.GetByEmailAsync(newChef.Email);
 
                 if (chefWithSameEmail != null)
-                    return BadRequest(new { notifications = new string[] { $"Email ist bereits vergeben." } });
+                    return Results.BadRequest($"Email ist bereits vergeben.");
             }
 
             Chef chef = new Chef(
@@ -61,12 +62,12 @@ public sealed class AuthController(
 
             await _chefRepository.AddAsync(chef).ConfigureAwait(false);
 
-            return Created();
+            return Results.Created();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, CreateErrorMessage(nameof(AuthController), nameof(RegisterAsync)), newChef);
-            return Status_500_Internal_Server_Error;
+            return Results.StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
